@@ -16,8 +16,7 @@ use Predis\Connection\ConnectionParametersInterface;
 use React\EventLoop\LoopInterface;
 
 /**
- * Defines a connection object used to communicate asynchronously with
- * a single Redis server.
+ * Defines a connection object used to communicate asynchronously with Redis.
  *
  * @author Daniele Alessandri <suppakilla@gmail.com>
  */
@@ -43,27 +42,6 @@ interface ConnectionInterface
     public function isConnected();
 
     /**
-     * Returns the underlying resource used to communicate with a Redis server.
-     *
-     * @return mixed
-     */
-    public function getResource();
-
-    /**
-     * Gets the parameters used to initialize the connection object.
-     *
-     * @return ConnectionParametersInterface
-     */
-    public function getParameters();
-
-    /**
-     * Gets the underlying event loop instance.
-     *
-     * @return LoopInterface
-     */
-    public function getEventLoop();
-
-    /**
      * Executes a command on Redis and calls the provided callback when the
      * response has been read from the server.
      *
@@ -71,25 +49,4 @@ interface ConnectionInterface
      * @param mixed $callback Callable object.
      */
     public function executeCommand(CommandInterface $command, $callback);
-
-    /**
-     * Write the buffer to writable network streams.
-     *
-     * @return mixed
-     */
-    public function write();
-
-    /**
-     * Read replies from readable network streams.
-     *
-     * @return mixed
-     */
-    public function read();
-
-    /**
-     * Returns a string representation of the connection.
-     *
-     * @return string
-     */
-    public function __toString();
 }

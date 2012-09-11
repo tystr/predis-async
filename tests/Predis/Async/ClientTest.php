@@ -28,7 +28,7 @@ class ClientTest extends PredisAsyncTestCase
         $client = new Client();
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Async\Connection\ConnectionInterface', $connection);
+        $this->assertInstanceOf('Predis\Async\Connection\SingleConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -48,7 +48,7 @@ class ClientTest extends PredisAsyncTestCase
         $client = new Client(null);
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Async\Connection\ConnectionInterface', $connection);
+        $this->assertInstanceOf('Predis\Async\Connection\SingleConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -68,7 +68,7 @@ class ClientTest extends PredisAsyncTestCase
         $client = new Client(null, null);
 
         $connection = $client->getConnection();
-        $this->assertInstanceOf('Predis\Async\Connection\ConnectionInterface', $connection);
+        $this->assertInstanceOf('Predis\Async\Connection\SingleConnectionInterface', $connection);
 
         $parameters = $connection->getParameters();
         $this->assertSame($parameters->host, '127.0.0.1');
@@ -116,7 +116,7 @@ class ClientTest extends PredisAsyncTestCase
 
         $client = new Client($connection, $eventloop);
 
-        $this->assertInstanceOf('Predis\Async\Connection\ConnectionInterface', $client->getConnection());
+        $this->assertInstanceOf('Predis\Async\Connection\SingleConnectionInterface', $client->getConnection());
         $this->assertSame($connection, $client->getConnection());
         $this->assertSame($connection->getEventLoop(), $client->getEventLoop());
 
@@ -176,7 +176,7 @@ class ClientTest extends PredisAsyncTestCase
         $loop = $this->getEventLoop();
         $callback = function ($client, $connection) { };
 
-        $connection = $this->getMock('Predis\Async\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Async\Connection\SingleConnectionInterface');
         $connection->expects($this->once())->method('getEventLoop')->will($this->returnValue($loop));
         $connection->expects($this->once())->method('connect')->with($callback);
         $connection->expects($this->once())->method('disconnect');
@@ -194,7 +194,7 @@ class ClientTest extends PredisAsyncTestCase
         $loop = $this->getEventLoop();
         $callback = function ($client, $connection) { };
 
-        $connection = $this->getMock('Predis\Async\Connection\ConnectionInterface');
+        $connection = $this->getMock('Predis\Async\Connection\SingleConnectionInterface');
         $connection->expects($this->once())->method('getEventLoop')->will($this->returnValue($loop));
         $connection->expects($this->once())->method('isConnected');
 
@@ -307,7 +307,7 @@ class ClientTest extends PredisAsyncTestCase
             $trigger = true;
 
             $test->assertInstanceOf('Predis\Async\Client', $cbkClient);
-            $test->assertInstanceOf('Predis\Async\Connection\ConnectionInterface', $cbkConnection);
+            $test->assertInstanceOf('Predis\Async\Connection\SingleConnectionInterface', $cbkConnection);
 
             $test->assertSame($client, $cbkClient);
 
