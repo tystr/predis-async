@@ -49,4 +49,11 @@ interface ConnectionInterface
      * @param mixed $callback Callable object.
      */
     public function executeCommand(CommandInterface $command, $callback);
+
+    /**
+     * Gets the underlying event loop instance.
+     *
+     * @return LoopInterface
+     */
+    public function getEventLoop();
 }

@@ -38,13 +38,6 @@ interface SingleConnectionInterface extends ConnectionInterface
     public function getParameters();
 
     /**
-     * Gets the underlying event loop instance.
-     *
-     * @return LoopInterface
-     */
-    public function getEventLoop();
-
-    /**
      * Write the buffer to writable network streams.
      *
      * @return mixed
