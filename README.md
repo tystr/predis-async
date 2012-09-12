@@ -23,6 +23,7 @@ bugs.
 - Abstraction for `MONITOR` contexts (Redis >= 1.2).
 - Abstraction for Lua scripting (Redis >= 2.6).
 - Ability to connect to Redis using TCP/IP or UNIX domain sockets.
+- Support for master / slave replication configurations (write on master, read from slaves).
 - The connection to Redis can be lazily established, commands are queued while the client is connecting.
 - Flexible system to define and register your own set of commands or server profiles to client instances.
 
@@ -68,7 +69,7 @@ a few common classes so if you already are a user of Predis you should feel at h
 ## Current TODO list ##
 
 - Complement the test suite with more test cases.
-- Try to implement aggregated connections and add an abstraction for master/slave replication.
+
 
 ## Contributing ##
 
