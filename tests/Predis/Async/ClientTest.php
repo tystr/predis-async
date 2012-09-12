@@ -171,6 +171,55 @@ class ClientTest extends PredisAsyncTestCase
     /**
      * @group disconnected
      */
+    public function testConstructorWithArrayOfParametersAndReplication()
+    {
+        $parameters = array(
+            'tcp://127.0.0.1:6379?alias=master',
+            'tcp://127.0.0.1:6379?alias=slave',
+        );
+
+        $client = new Client($parameters, array('replication' => true));
+
+        $this->assertInstanceOf('Predis\Async\Connection\MasterSlaveReplication', $connection = $client->getConnection());
+        $this->assertInstanceOf('Predis\Async\Connection\SingleConnectionInterface', $connection->getConnectionById('master'));
+        $this->assertInstanceOf('Predis\Async\Connection\SingleConnectionInterface', $connection->getConnectionById('slave'));
+    }
+
+    /**
+     * @group disconnected
+     */
+    public function testConstructorWithArrayOfConnectionsAndReplication()
+    {
+        $loop = $this->getEventLoop();
+
+        $master = $this->getMock('Predis\Async\Connection\SingleConnectionInterface');
+        $master->expects($this->any())->method('getEventLoop')->will($this->returnValue($loop));
+        $master
+            ->expects($this->any())
+            ->method('getParameters')
+            ->will($this->returnValue(
+                new ConnectionParameters('tcp://127.0.0.1:6379?alias=master')
+            ));
+
+        $slave = $this->getMock('Predis\Async\Connection\SingleConnectionInterface');
+        $slave->expects($this->any())->method('getEventLoop')->will($this->returnValue($loop));
+        $slave
+            ->expects($this->any())
+            ->method('getParameters')
+            ->will($this->returnValue(
+                new ConnectionParameters('tcp://127.0.0.1:6379?alias=slave')
+            ));
+
+        $client = new Client(array($master, $slave), array('eventloop' => $loop, 'replication' => true));
+
+        $this->assertInstanceOf('Predis\Async\Connection\MasterSlaveReplication', $connection = $client->getConnection());
+        $this->assertSame($master, $connection->getConnectionById('master'));
+        $this->assertSame($slave, $connection->getConnectionById('slave'));
+    }
+
+    /**
+     * @group disconnected
+     */
     public function testConnectAndDisconnect()
     {
         $loop = $this->getEventLoop();
