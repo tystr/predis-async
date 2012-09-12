@@ -21,6 +21,7 @@ use Predis\Option\ClientOptionsInterface;
 use Predis\Profile\ServerProfile;
 use Predis\Profile\ServerProfileInterface;
 use Predis\Async\Connection\ConnectionInterface;
+use Predis\Async\Connection\SingleConnectionInterface;
 use Predis\Async\Connection\StreamConnection;
 use Predis\Async\Monitor\MonitorContext;
 use Predis\Async\Option\ClientOptions;
@@ -99,9 +100,9 @@ class Client
     }
 
     /**
-     * Initializes one or multiple connection (cluster) objects from various
-     * types of arguments (string, array) or returns the passed object if it
-     * implements Predis\Connection\ConnectionInterface.
+     * Initializes one or multiple connection instances from various types of
+     * arguments (string, array) or returns the passed object if it implements
+     * Predis\Async\Connection\ConnectionInterface.
      *
      * @param mixed $parameters Connection parameters or instance.
      * @param ClientOptionsInterface $options Client options.
@@ -110,15 +111,43 @@ class Client
     protected function initializeConnection($parameters, ClientOptionsInterface $options)
     {
         if ($parameters instanceof ConnectionInterface) {
-            if ($parameters->getEventLoop() !== $this->options->eventloop) {
+            if ($parameters->getEventLoop() !== $options->eventloop) {
                 throw new ClientException('Client and connection must share the same event loop instance');
             }
 
             return $parameters;
         }
 
+        if (is_array($parameters) && isset($parameters[0], $options->replication)) {
+            if (false == $connection = $options->replication) {
+                throw new ClientException('Multiple connections are supported only for master/slave replication');
+            }
+
+            foreach ($parameters as $singleParameters) {
+                $connection->add($this->createSingleConnection($singleParameters, $options));
+            }
+        } else {
+            $connection = $this->createSingleConnection($parameters, $options);
+        }
+
+        return $connection;
+    }
+
+    /**
+     * Initializes a new single connection instance.
+     *
+     * @param mixed $parameters Connection parameters or instance.
+     * @param ClientOptionsInterface $options Client options.
+     * @return SingleConnectionInterface
+     */
+    protected function createSingleConnection($parameters, ClientOptionsInterface $options)
+    {
+        if ($parameters instanceof SingleConnectionInterface) {
+            return $parameters;
+        }
+
         $parameters = $this->filterParameters($parameters);
-        $connection = new StreamConnection($parameters, $this->options->eventloop);
+        $connection = new StreamConnection($parameters, $options->eventloop);
 
         if (isset($options->on_error)) {
             $this->setErrorCallback($connection, $options->on_error);

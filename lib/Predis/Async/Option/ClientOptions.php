@@ -31,6 +31,7 @@ class ClientOptions extends BaseClientOptions
             'profile'   => new ClientProfile(),
             'prefix'    => new ClientPrefix(),
             'eventloop' => new ClientEventLoop(),
+            'replication' => new ClientReplication(),
         );
     }
 }
